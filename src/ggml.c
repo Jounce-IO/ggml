@@ -23,6 +23,21 @@
 #include <limits.h>
 #include <stdarg.h>
 #include <signal.h>
+#include <unistd.h>
+#include <time.h>
+
+void busy_wait(double delay) {
+    // Get the current time
+    clock_t start_time = clock();
+
+    // Calculate the end time
+    clock_t end_time = start_time + delay * CLOCKS_PER_SEC;
+
+    // Busy wait loop
+    while (clock() < end_time) {
+        // Do nothing
+    }
+}
 
 #ifdef GGML_USE_METAL
 #include <unistd.h>
@@ -9561,6 +9576,11 @@ static bool ggml_compute_forward_mul_mat_use_blas(
 
     const int64_t ne0 = dst->ne[0];
     const int64_t ne1 = dst->ne[1];
+    if(src0->ne[0] == src0->ne[1] && src1->ne[0] == src1->ne[1]) {
+        // printf("%d\n", src1->ne[1]);
+        printf("CBLAS: %d %d %d %d\n", src0->ne[0],  src0->ne[1], src1->ne[0], src1->ne[1]);
+        // printf("CCBLAS: %d %d %d %d %d\n", ne0, ne1, ne10, ne00, ne01)
+    }
 
     // NOTE: with GGML_OP_MUL_MAT_ID we don't want to go through the BLAS branch because it will dequantize (to_float)
     //       all the experts for each batch element and the processing would become incredibly slow
@@ -9571,7 +9591,7 @@ static bool ggml_compute_forward_mul_mat_use_blas(
       //src0->type == GGML_TYPE_F32 &&
         src1->type == GGML_TYPE_F32 &&
         (ne0 >= 32 && ne1 >= 32 && ne10 >= 32)) {
-
+        printf("`");
         /*printf("BLAS: %d %d %d %d %d\n", ne0, ne1, ne10, ne00, ne01);*/
         return true;
     }
@@ -9645,7 +9665,7 @@ static void ggml_compute_forward_mul_mat(
         if (params->type == GGML_TASK_FINALIZE) {
             return;
         }
-
+        printf("`");
         for (int64_t i13 = 0; i13 < ne13; i13++) {
             for (int64_t i12 = 0; i12 < ne12; i12++) {
                 // broadcast src0 into src1 across 2nd,3rd dimension
@@ -9751,6 +9771,8 @@ static void ggml_compute_forward_mul_mat(
 
     // attempt to reduce false-sharing (does not seem to make a difference)
     float tmp[16];
+    // printf("`");
+    busy_wait(0.0);
 
     for (int64_t iir1 = ir110; iir1 < ir111; iir1 += blck_1) {
         for (int64_t iir0 = ir010; iir0 < ir011; iir0 += blck_0) {

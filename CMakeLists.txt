@@ -39,9 +39,9 @@ option(GGML_BUILD_EXAMPLES          "ggml: build examples" ${GGML_STANDALONE})
 
 option(GGML_TEST_COVERAGE           "ggml: enable test coverage" OFF)
 
-option(GGML_PERF                    "ggml: enable perf timings"          OFF)
+option(GGML_PERF                    "ggml: enable perf timings"          ON)
 option(GGML_NO_ACCELERATE           "ggml: disable Accelerate framework" OFF)
-option(GGML_OPENBLAS                "ggml: use OpenBLAS"                 OFF)
+option(GGML_OPENBLAS                "ggml: use OpenBLAS"                 ON)
 option(GGML_CLBLAST                 "ggml: use clBLAST"                  OFF)
 option(GGML_HIPBLAS                 "ggml: use hipBLAS"                  OFF)
 option(GGML_CUBLAS                  "ggml: use cuBLAS"                   OFF)

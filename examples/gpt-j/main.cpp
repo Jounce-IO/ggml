@@ -392,7 +392,6 @@ bool gptj_eval(
               std::vector<float>         & embd_w,
               size_t                     & mem_per_token) {
     const int N = embd_inp.size();
-
     const auto & hparams = model.hparams;
 
     const int n_embd  = hparams.n_embd;
@@ -580,6 +579,7 @@ bool gptj_eval(
     {
         inpL = ggml_mul_mat(ctx0, model.lmh_g, inpL);
 
+
         inpL = ggml_add(ctx0,
                 ggml_repeat(ctx0, model.lmh_b, inpL),
                 inpL);
@@ -590,7 +590,7 @@ bool gptj_eval(
 
     // run the computation
     ggml_build_forward_expand(gf, inpL);
-    ggml_graph_compute_with_ctx(ctx0, gf, n_threads);
+    ggml_graph_compute_with_ctx(ctx0, gf, n_threads); // actual computation
 
     //if (n_past%100 == 0) {
     //    ggml_graph_print   (&gf);
